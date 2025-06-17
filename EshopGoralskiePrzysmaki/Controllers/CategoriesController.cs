@@ -1,62 +1,120 @@
+using EshopGoralskiePrzysmaki.DTO.Categories;
+using EshopGoralskiePrzysmaki.Exceptions;
 using EshopGoralskiePrzysmaki.Models;
+using EshopGoralskiePrzysmaki.Repositories.Categories;
+using EshopGoralskiePrzysmaki.Services.Validation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EshopGoralskiePrzysmaki.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CategoriesController: ControllerBase
+public class CategoriesController: ApiController
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategoryValidationService _categoryValidationService;
 
-    public CategoriesController(ApplicationDbContext dbContext)
+    public CategoriesController(ICategoryRepository categoryRepository, ICategoryValidationService categoryValidationService)
     {
-        _dbContext = dbContext;
+        _categoryRepository = categoryRepository;
+        _categoryValidationService = categoryValidationService;
     }
-   
+
+    [HttpGet(Name = "GetCategories")]
+    public ActionResult<CategoryListDto> ListCategories()
+    {
+        var categories = _categoryRepository.GetCategories();
+        
+        var categoryListDto = new CategoryListDto();
+        categoryListDto.CopyFrom(categories);
+        
+        return ResponseSuccess(new {categories = categoryListDto});
+    }
 
     [HttpGet("{id}", Name = "GetCategoryDetails")]
-    public ActionResult<Category> GetById(int id)
+    public ActionResult<CategoryResourceDto> GetById(int id)
     {
-        var category = _dbContext.Categories.Find(id);
-        if (category == null)
+        try
         {
-            return NotFound();
+            var category = _categoryRepository.GetCategoryById(id);
+            var categoryDto = new CategoryDto();
+            categoryDto.CopyFrom(category);
+
+            var categoryResourceDto = new CategoryResourceDto();
+            categoryResourceDto.CopyFrom(categoryDto);
+
+            return ResponseSuccess(categoryResourceDto);
         }
-        return category;
+        catch (ModelNotFoundException e)
+        {
+            return ResponseNotFound(e);
+        }
     }
 
-    [HttpPost]
-    public ActionResult<Category> Post([FromBody] Category category)
+    [HttpPost(Name = "CreateCategory")]
+    public ActionResult<CategoryResourceDto> Post([FromBody] CreateCategoryDto createCategoryDto)
     {
-        _dbContext.Categories.Add(category);
-        _dbContext.SaveChanges();
-        return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+        try
+        {
+            _categoryValidationService.ValidateCategory(createCategoryDto);
+        }
+        catch (BadRequestException e)
+        {
+            return ResponseBadRequest(e);
+        }
+
+        var category = new Category()
+        {
+            Name = createCategoryDto.Name,
+        };
+
+        _categoryRepository.AddCategory(category);
+
+        var categoryDto = new CategoryDto();
+        categoryDto.CopyFrom(category);
+            
+        var categoryResourceDto = new CategoryResourceDto();
+        categoryResourceDto.CopyFrom(categoryDto);
+
+        return ResponseSuccess(categoryResourceDto);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteCategory")]
     public ActionResult Delete(int id)
     {
-        var category = _dbContext.Categories.Find(id);
-        if (category == null)
+        try
         {
-            return NotFound();
+            var category = _categoryRepository.GetCategoryById(id);
+            _categoryRepository.DeleteCategory(category.Id);
+
+            return ResponseSuccess(new { id = category.Id });
         }
-        _dbContext.Categories.Remove(category);
-        _dbContext.SaveChanges();
-        return NoContent();
+        catch (ModelNotFoundException e)
+        {
+            return ResponseNotFound(e);
+        }
     }
 
-    [HttpPut("{id}")]
-    public ActionResult<Category> Put(int id, [FromBody] Category category)
+    [HttpPut("{id}",  Name = "UpdateCategory")]
+    public ActionResult<CategoryResourceDto> Put(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
     {
-        if (id != category.Id)
+        try
         {
-            return BadRequest();
+            var category = _categoryRepository.GetCategoryById(id);
+            category.Name = updateCategoryDto.Name;
+            _categoryRepository.UpdateCategory(category);
+            
+            var categoryDto = new CategoryDto();
+            categoryDto.CopyFrom(category);
+
+            var categoryResourceDto = new CategoryResourceDto();
+            categoryResourceDto.CopyFrom(categoryDto);
+
+            return ResponseSuccess(categoryResourceDto);
         }
-        _dbContext.Entry(category).State = EntityState.Modified;
-        _dbContext.SaveChanges();
-        return NoContent();
+        catch (ModelNotFoundException e)
+        {
+            return ResponseNotFound(e);
+        }
     }
 }
