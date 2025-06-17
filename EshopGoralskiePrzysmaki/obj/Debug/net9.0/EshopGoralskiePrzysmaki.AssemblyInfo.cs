@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EshopGoralskiePrzysmaki")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+09df686b22580eda39c5f8d07854e61f160a437b")]
 [assembly: System.Reflection.AssemblyProductAttribute("EshopGoralskiePrzysmaki")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EshopGoralskiePrzysmaki")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
