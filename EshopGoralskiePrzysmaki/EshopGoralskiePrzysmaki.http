@@ -1,0 +1,6 @@
+@EshopGoralskiePrzysmaki_HostAddress = http://localhost:5179
+
+GET {{EshopGoralskiePrzysmaki_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
