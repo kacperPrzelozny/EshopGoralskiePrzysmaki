@@ -4,7 +4,7 @@ namespace EshopGoralskiePrzysmaki.DTO.Categories;
 
 public class CategoryListDto
 {
-    public List<CategoryDto> Categories { get; set; }
+    public List<CategoryDto> Categories { get; set; } = [];
 
     public void CopyFrom(IEnumerable<Category> categories)
     {

@@ -8,9 +8,8 @@ public class CategoryDto: AbstractModelDto
 
     public void CopyFrom(Category category)
     {
-        Id = category.Id;
         Name = category.Name;
-        Created = category.Created;
-        Edited = category.Edited;
+        
+        base.CopyFrom(category);
     }
 }

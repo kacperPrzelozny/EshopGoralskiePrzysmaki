@@ -2,7 +2,7 @@ using EshopGoralskiePrzysmaki.DTO.Categories;
 using EshopGoralskiePrzysmaki.Exceptions;
 using EshopGoralskiePrzysmaki.Models;
 using EshopGoralskiePrzysmaki.Repositories.Categories;
-using EshopGoralskiePrzysmaki.Services.Validation;
+using EshopGoralskiePrzysmaki.Services.Validation.Categories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EshopGoralskiePrzysmaki.Controllers;
@@ -28,20 +28,18 @@ public class CategoriesController: ApiController
         var categoryListDto = new CategoryListDto();
         categoryListDto.CopyFrom(categories);
         
-        return ResponseSuccess(new {categories = categoryListDto});
+        return ResponseSuccess(categoryListDto);
     }
 
-    [HttpGet("{id}", Name = "GetCategoryDetails")]
+    [HttpGet("{id:int}", Name = "GetCategoryDetails")]
     public ActionResult<CategoryResourceDto> GetById(int id)
     {
         try
         {
             var category = _categoryRepository.GetCategoryById(id);
-            var categoryDto = new CategoryDto();
-            categoryDto.CopyFrom(category);
 
             var categoryResourceDto = new CategoryResourceDto();
-            categoryResourceDto.CopyFrom(categoryDto);
+            categoryResourceDto.CopyFrom(category);
 
             return ResponseSuccess(categoryResourceDto);
         }
@@ -52,11 +50,11 @@ public class CategoriesController: ApiController
     }
 
     [HttpPost(Name = "CreateCategory")]
-    public ActionResult<CategoryResourceDto> Post([FromBody] CreateCategoryDto createCategoryDto)
+    public ActionResult<CategoryResourceDto> Post([FromBody] CreateOrUpdateCategoryDto createOrUpdateCategoryDto)
     {
         try
         {
-            _categoryValidationService.ValidateCategory(createCategoryDto);
+            _categoryValidationService.ValidateCategory(createOrUpdateCategoryDto);
         }
         catch (BadRequestException e)
         {
@@ -65,27 +63,24 @@ public class CategoriesController: ApiController
 
         var category = new Category()
         {
-            Name = createCategoryDto.Name,
+            Name = createOrUpdateCategoryDto.Name,
         };
 
         _categoryRepository.AddCategory(category);
 
-        var categoryDto = new CategoryDto();
-        categoryDto.CopyFrom(category);
-            
         var categoryResourceDto = new CategoryResourceDto();
-        categoryResourceDto.CopyFrom(categoryDto);
+        categoryResourceDto.CopyFrom(category);
 
         return ResponseSuccess(categoryResourceDto);
     }
 
-    [HttpDelete("{id}", Name = "DeleteCategory")]
+    [HttpDelete("{id:int}", Name = "DeleteCategory")]
     public ActionResult Delete(int id)
     {
         try
         {
             var category = _categoryRepository.GetCategoryById(id);
-            _categoryRepository.DeleteCategory(category.Id);
+            _categoryRepository.DeleteCategory(category);
 
             return ResponseSuccess(new { id = category.Id });
         }
@@ -95,22 +90,24 @@ public class CategoriesController: ApiController
         }
     }
 
-    [HttpPut("{id}",  Name = "UpdateCategory")]
-    public ActionResult<CategoryResourceDto> Put(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
+    [HttpPut("{id:int}",  Name = "UpdateCategory")]
+    public ActionResult<CategoryResourceDto> Put(int id, [FromBody] CreateOrUpdateCategoryDto updateCategoryDto)
     {
         try
         {
+            _categoryValidationService.ValidateCategory(updateCategoryDto);
             var category = _categoryRepository.GetCategoryById(id);
             category.Name = updateCategoryDto.Name;
             _categoryRepository.UpdateCategory(category);
-            
-            var categoryDto = new CategoryDto();
-            categoryDto.CopyFrom(category);
 
             var categoryResourceDto = new CategoryResourceDto();
-            categoryResourceDto.CopyFrom(categoryDto);
+            categoryResourceDto.CopyFrom(category);
 
             return ResponseSuccess(categoryResourceDto);
+        }
+        catch (BadRequestException e)
+        {
+            return ResponseBadRequest(e);
         }
         catch (ModelNotFoundException e)
         {

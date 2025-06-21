@@ -47,8 +47,8 @@ public class CategoryRepository: ICategoryRepository
         _dbContext.SaveChanges();
     }
 
-    public void DeleteCategory(int id)
+    public void DeleteCategory(Category category)
     {
-        
+        _dbContext.Categories.Remove(category);
     }
 }

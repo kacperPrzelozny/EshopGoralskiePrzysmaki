@@ -1,6 +1,6 @@
 namespace EshopGoralskiePrzysmaki.DTO.Categories;
 
-public class CreateCategoryDto: AbstractModelDto
+public class CreateOrUpdateCategoryDto
 {
     public required string Name { get; set; }
 }
