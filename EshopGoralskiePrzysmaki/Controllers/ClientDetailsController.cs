@@ -1,4 +1,7 @@
+using EshopGoralskiePrzysmaki.DTO.Client;
+using EshopGoralskiePrzysmaki.Exceptions;
 using EshopGoralskiePrzysmaki.Models;
+using EshopGoralskiePrzysmaki.Repositories.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,23 +9,28 @@ namespace EshopGoralskiePrzysmaki.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ClientDetailsController: ControllerBase
+public class ClientDetailsController: ApiController
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IClientRepository _clientRepository;
 
-    public ClientDetailsController(ApplicationDbContext dbContext)
+    public ClientDetailsController(IClientRepository clientRepository)
     {
-        _dbContext = dbContext;
+        _clientRepository = clientRepository;
     }
    
     [HttpGet(Name = "GetClientDetails")]
-    public ActionResult<Client> GetById()
+    public ActionResult<ClientResourceDto> GetClientDetails()
     {
-        var Client = _dbContext.Clients.Find(1);
-        if (Client == null)
+        try
         {
-            return NotFound();
+            var client = _clientRepository.GetClient();
+            var clientResourceDto = new ClientResourceDto();
+            clientResourceDto.CopyFrom(client);
+            return ResponseSuccess(clientResourceDto);
         }
-        return Client;
+        catch (ModelNotFoundException e)
+        {
+            return ResponseNotFound(e);
+        }
     }
 }
