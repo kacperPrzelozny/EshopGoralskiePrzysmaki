@@ -1,6 +1,4 @@
-using EshopGoralskiePrzysmaki.Exception;
 using EshopGoralskiePrzysmaki.Exceptions;
-using EshopGoralskiePrzysmaki.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EshopGoralskiePrzysmaki.Controllers;

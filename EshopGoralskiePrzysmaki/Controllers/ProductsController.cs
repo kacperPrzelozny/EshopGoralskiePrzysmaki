@@ -50,7 +50,7 @@ public class ProductsController : ApiController
     }
 
     [HttpPost]
-    public ActionResult<ProductResourceDto> Post([FromBody] CreateOrUpdateProductDto createProductDto)
+    public ActionResult<ProductResourceDto> Post([FromForm] CreateOrUpdateProductDto createProductDto)
     {
         try
         {
@@ -83,7 +83,7 @@ public class ProductsController : ApiController
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<ProductResourceDto> Put(int id, [FromBody] CreateOrUpdateProductDto updateProductDto)
+    public ActionResult<ProductResourceDto> Put(int id, [FromForm] CreateOrUpdateProductDto updateProductDto)
     {
         try
         {

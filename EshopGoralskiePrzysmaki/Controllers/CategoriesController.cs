@@ -50,7 +50,7 @@ public class CategoriesController: ApiController
     }
 
     [HttpPost(Name = "CreateCategory")]
-    public ActionResult<CategoryResourceDto> Post([FromBody] CreateOrUpdateCategoryDto createOrUpdateCategoryDto)
+    public ActionResult<CategoryResourceDto> Post([FromForm] CreateOrUpdateCategoryDto createOrUpdateCategoryDto)
     {
         try
         {
@@ -91,7 +91,7 @@ public class CategoriesController: ApiController
     }
 
     [HttpPut("{id:int}",  Name = "UpdateCategory")]
-    public ActionResult<CategoryResourceDto> Put(int id, [FromBody] CreateOrUpdateCategoryDto updateCategoryDto)
+    public ActionResult<CategoryResourceDto> Put(int id, [FromForm] CreateOrUpdateCategoryDto updateCategoryDto)
     {
         try
         {
