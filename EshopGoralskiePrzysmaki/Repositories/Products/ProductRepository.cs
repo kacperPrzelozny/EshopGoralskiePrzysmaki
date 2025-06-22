@@ -12,9 +12,12 @@ public class ProductRepository: IProductRepository
         _dbContext = context;
     }
     
-    public IEnumerable<Product> GetProducts()
+    public IEnumerable<Product> GetProducts(int categoryId = 0)
     {
-        return _dbContext.Products.ToList();
+        if (categoryId == 0)
+            return _dbContext.Products.ToList();
+        
+        return _dbContext.Products.Where(p => p.CategoryId == categoryId);
     }
 
     public Product GetProductById(int id)

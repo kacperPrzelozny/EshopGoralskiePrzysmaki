@@ -21,9 +21,9 @@ public class ProductsController : ApiController
     }
 
     [HttpGet(Name = "GetProducts")]
-    public ActionResult<ProductListDto> ListProducts()
+    public ActionResult<ProductListDto> ListProducts([FromQuery] GetProductListDto getProductListDto)
     {
-        var categories = _productRepository.GetProducts();
+        var categories = _productRepository.GetProducts(getProductListDto.CategoryId);
         
         var categoryListDto = new ProductListDto();
         categoryListDto.CopyFrom(categories);

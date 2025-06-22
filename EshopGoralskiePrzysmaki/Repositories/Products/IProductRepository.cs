@@ -4,7 +4,7 @@ namespace EshopGoralskiePrzysmaki.Repositories.Products;
 
 public interface IProductRepository
 {
-    IEnumerable<Product> GetProducts();
+    IEnumerable<Product> GetProducts(int categoryId = 0);
     Product GetProductById(int id);
     bool ProductExists(string sku);
     void AddProduct(Product product);
